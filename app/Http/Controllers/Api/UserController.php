@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -16,9 +17,18 @@ class UserController extends Controller
         $credentials = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             "email" => ['required', 'email', 'max:255', 'unique:users'],
-            "password" => ['required', 'string', 'min:8', 'confirmed'] ,
+            "password" => ['required', 'string', 'min:8', 'confirmed'] , 
+            "phone" => ['required', 'string', 'max:255'], 
+            "city" => ['required', 'string', 'max:255'],
         ]) ; 
-        User::create($credentials); 
+        
+        if ($request->hasFile('image')) {
+            $credentials["image"] = $request->file("image")->store("users",'public') ;
+
+        }
+        $user = User::create($credentials); 
+        $adminrole = Role::find(2)  ;
+        $user->roles()->attach($adminrole->id) ;
         return response()->json([
             "status" => true , 
             "message" => "User created successfully" 
@@ -55,7 +65,8 @@ class UserController extends Controller
         return response()->json([
             "status" => true , 
             "message" => "User logged in successfully" , 
-            "user" => $user
+            "user" => $user , 
+            "Profile_image" => asset("storage/$user->image") 
         ]);
 
     } 
