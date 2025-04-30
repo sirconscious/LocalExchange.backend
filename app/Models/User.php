@@ -59,4 +59,44 @@ public function hasRole($role)
     return $this->roles()->where('name', $role)->exists();
 }
 
+
+
+// public function produits()
+// {
+//     return $this->hasMany(Product::class, 'vendeur_id');
+// }
+
+// public function transactionsEnTantQuAcheteur()
+// {
+//     return $this->hasMany(Transaction::class, 'acheteur_id');
+// }
+
+// public function transactionsEnTantQueVendeur()
+// {
+//     return $this->hasMany(Transaction::class, 'vendeur_id');
+// }
+
+// public function messagesEnvoyes()
+// {
+//     return $this->hasMany(Message::class, 'expediteur_id');
+// }
+
+// public function messagesRecus()
+// {
+//     return $this->hasMany(Message::class, 'destinataire_id');
+// }
+
+// public function avisRediges()
+// {
+//     return $this->hasMany(Avis::class, 'auteur_id');
+// }
+
+// public function avisRecus()
+// {
+//     return $this->hasMany(Avis::class, 'cible_id');
+// }
+
+
+
+
 }

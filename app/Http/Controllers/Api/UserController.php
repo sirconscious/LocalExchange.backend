@@ -22,10 +22,17 @@ class UserController extends Controller
             "city" => ['required', 'string', 'max:255'],
         ]) ; 
         
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('image')) { 
             $credentials["image"] = $request->file("image")->store("users",'public') ;
 
         }
+        // Role::create([
+        //     "name" => "user"
+        // ]);
+        // Role::create([
+        //     "name" => "admin"
+        // ]);
+     
         $user = User::create($credentials); 
         $adminrole = Role::find(2)  ;
         $user->roles()->attach($adminrole->id) ;

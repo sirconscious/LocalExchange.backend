@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Http\Request;
@@ -12,6 +14,11 @@ Route::post('/register', [App\Http\Controllers\Api\UserController::class, 'regis
 Route::post('/login', [App\Http\Controllers\Api\UserController::class, 'login'])->name('login'); 
 Route::get('/users', [App\Http\Controllers\Api\UserController::class, 'index'])->name('users');
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', [App\Http\Controllers\Api\UserController::class, 'getUser'])->name('user')->middleware(RoleMiddleware::class . ':user'); 
+    Route::get('/user', [App\Http\Controllers\Api\UserController::class, 'getUser'])->name('user')->middleware(RoleMiddleware::class . ':admin'); 
     Route::get('/logout', [App\Http\Controllers\Api\UserController::class, 'logout'])->name('logout');
+    Route::post("/product" , [ProductController::class , "store"]);
 });
+Route::get('products' , [ProductController::class , "index"] ) ;  
+Route::get('product/{product}' , [ProductController::class , "show"]); 
+
+Route::get('categorys' , [CategoryController::class , "index"]) ;
