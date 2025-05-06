@@ -15,7 +15,8 @@ class Product extends Model
         'localisation',
         'vendeur_id',
         'categorie_id',
-        'dateDepot',
+        'dateDepot', 
+        'etat'
     ];
 
     // Relationships

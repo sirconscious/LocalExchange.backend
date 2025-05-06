@@ -17,7 +17,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [App\Http\Controllers\Api\UserController::class, 'getUser'])->name('user');
     Route::get('/logout', [App\Http\Controllers\Api\UserController::class, 'logout'])->name('logout');
     Route::post("/product" , [ProductController::class , "store"]);
-    
     // New user profile routes
     Route::put('/user/update', [App\Http\Controllers\Api\UserController::class, 'updateUser'])->name('user.update');
     Route::put('/user/update-password', [App\Http\Controllers\Api\UserController::class, 'updatePassword'])->name('user.update-password');
@@ -26,5 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 Route::get('products' , [ProductController::class , "index"] ) ;  
 Route::get('product/{product}' , [ProductController::class , "show"]); 
+Route::get("/filterdproducts" , [ProductController::class , "filterd"]);
 
 Route::get('categorys' , [CategoryController::class , "index"]) ;

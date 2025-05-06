@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductsRessource;
+use App\Models\Category;
 use App\Models\Image;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -33,10 +34,10 @@ class ProductController extends Controller
             "nom" => "required",
             "description" => "required",
             "prix" => "required",
-            "localisation" => "required",
+            "localisation" => "required", 
+            "etat"=> "required",
             "categorie_id" => "required",
         ]);
-        
         $formFields["vendeur_id"] = $vendeur_id;
         $formFields["dateDepot"] = now();
         
@@ -92,7 +93,14 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         //
-    }
+    } 
+    public function filterd(Request $request ){  
+        $catego = $request->query('categorie'); 
+        $categorie_id = Category::where('nom', $catego)->first();  
+        // return response()->json($categorie_id);
+        $products = Product::where('categorie_id', $categorie_id->id)->take(3)->get();
+        return ProductsRessource::collection($products);
+     }
 
     /**
      * Remove the specified resource from storage.

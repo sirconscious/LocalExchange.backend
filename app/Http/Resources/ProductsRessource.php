@@ -17,7 +17,8 @@ class ProductsRessource extends JsonResource
         $values =  parent::toArray($request) ;
         $values["vendeur"] = $this->vendeur->name ;
         $values["categorie"] = $this->categorie->nom ; 
-        $values["image"] = $this->images ;
+        $values["image"] = $this->images ; 
+        $values["owner"] = $this->vendeur ;
         return $values ; 
         // return parent::toArray($request);
     } 
