@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ProductsRessource;
+use App\Models\Caracteristique;
 use App\Models\Category;
 use App\Models\Image;
 use App\Models\Product;
@@ -36,14 +37,21 @@ class ProductController extends Controller
             "prix" => "required",
             "localisation" => "required", 
             "etat"=> "required",
-            "categorie_id" => "required",
+            "categorie_id" => "required", 
         ]);
+        
         $formFields["vendeur_id"] = $vendeur_id;
         $formFields["dateDepot"] = now();
         
         // Créer le produit
+        // return response()->json($request->all());
         $product = Product::create($formFields);
-        
+        if ($request->has('caracteristique')) {
+            $caracteristique = new Caracteristique();
+            $caracteristique->produit_id = $product->id;
+            $caracteristique->caracteristique = json_encode($request->input('caracteristique'));
+            $caracteristique->save();
+        } 
         // Traiter toutes les images
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $imageFile) {
@@ -95,10 +103,12 @@ class ProductController extends Controller
         //
     } 
     public function filterd(Request $request ){  
+
         $catego = $request->query('categorie'); 
         $categorie_id = Category::where('nom', $catego)->first();  
         // return response()->json($categorie_id);
         $products = Product::where('categorie_id', $categorie_id->id)->take(3)->get();
+
         return ProductsRessource::collection($products);
      }
 
@@ -108,5 +118,6 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         //
-    }
+    } 
+ 
 }

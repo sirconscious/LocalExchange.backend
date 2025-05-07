@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CaraquteristiqueController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Middleware\RoleMiddleware;
@@ -25,6 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 Route::get('products' , [ProductController::class , "index"] ) ;  
 Route::get('product/{product}' , [ProductController::class , "show"]); 
-Route::get("/filterdproducts" , [ProductController::class , "filterd"]);
-
+Route::get("/filterdproducts" , [ProductController::class , "filterd"]); 
+Route::get('caracteristique/{id}' , [CaraquteristiqueController::class , "show"]); 
+Route::post('caracteristique' , [CaraquteristiqueController::class , "store"]);
 Route::get('categorys' , [CategoryController::class , "index"]) ;

@@ -16,7 +16,7 @@ class Product extends Model
         'vendeur_id',
         'categorie_id',
         'dateDepot', 
-        'etat'
+        'etat'  
     ];
 
     // Relationships
@@ -34,5 +34,9 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(Image::class, 'produit_id');
+    } 
+    public function caracteristiques()
+    {
+        return $this->hasMany(Caracteristique::class, 'produit_id');
     }
 }
