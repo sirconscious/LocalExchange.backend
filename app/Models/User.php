@@ -24,7 +24,9 @@ class User extends Authenticatable
         'password', 
         "image" , 
         "phone" , 
-        "city"
+        "city" , 
+        "status" , 
+        "last_login" ,
     ];
 
     /**
