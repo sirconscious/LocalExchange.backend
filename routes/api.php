@@ -4,6 +4,8 @@ use App\Http\Controllers\CaraquteristiqueController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Middleware\RoleMiddleware;
+use App\Http\Controllers\Api\StatisticsController;
+
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +26,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/user/update-image', [App\Http\Controllers\Api\UserController::class, 'updateProfileImage'])->name('user.update-image');
     Route::delete('/user/delete', [App\Http\Controllers\Api\UserController::class, 'deleteUser'])->name('user.delete');
 });
+Route::get('/admin/statistics/dashboard', [StatisticsController::class, 'getDashboardStats']);
+Route::get('/admin/statistics/users', [StatisticsController::class, 'getUserStats']);
+Route::get('/admin/statistics/products', [StatisticsController::class, 'getProductStats']);
 Route::get('products' , [ProductController::class , "index"] ) ;  
 Route::get('product/{product}' , [ProductController::class , "show"]); 
 Route::get("/filterdproducts" , [ProductController::class , "filterd"]); 

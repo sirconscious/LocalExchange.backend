@@ -16,6 +16,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+         $this->call([
+            StatisticsTestSeeder::class
+        ]);
         // User::factory(10)->create();
             // Product::factory(10)->create() ; 
         // User::factory()->create([
