@@ -25,6 +25,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/update-password', [App\Http\Controllers\Api\UserController::class, 'updatePassword'])->name('user.update-password');
     Route::post('/user/update-image', [App\Http\Controllers\Api\UserController::class, 'updateProfileImage'])->name('user.update-image');
     Route::delete('/user/delete', [App\Http\Controllers\Api\UserController::class, 'deleteUser'])->name('user.delete');
+    // User status update route
+    Route::put('/users/{id}/status', [App\Http\Controllers\Api\UserController::class, 'updateStatus'])->name('users.status.update');
 });
 Route::get('/admin/statistics/dashboard', [StatisticsController::class, 'getDashboardStats']);
 Route::get('/admin/statistics/users', [StatisticsController::class, 'getUserStats']);

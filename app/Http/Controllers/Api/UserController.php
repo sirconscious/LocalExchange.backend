@@ -228,4 +228,22 @@ class UserController extends Controller
             'message' => 'User deleted successfully'
         ]);
     }
+
+    public function updateStatus($id, Request $request)
+    {
+        $request->validate([
+            'status' => 'required|in:active,suspended,pending'
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User status updated successfully',
+            'user' => $user
+        ]);
+    }
 }
