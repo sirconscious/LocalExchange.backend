@@ -14,9 +14,40 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::all();
+        $query = Product::query();
+
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('nom', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhereHas('vendeur', function($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Status filter
+        if ($request->has('status') && $request->input('status') !== 'all') {
+            $query->where('status', $request->input('status'));
+        }
+
+        // Category filter
+        if ($request->has('category') && $request->input('category') !== 'all') {
+            $query->whereHas('category', function($q) use ($request) {
+                $q->where('nom', $request->input('category'));
+            });
+        }
+
+        // Get paginated results
+        $perPage = 12; // Number of items per page
+        $products = $query->with(['images', 'vendeur', 'category'])
+                         ->orderBy('created_at', 'desc')
+                         ->paginate($perPage);
+
         return ProductsRessource::collection($products);
     }
 
