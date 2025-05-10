@@ -11,40 +11,68 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    public function index(){
-        $users = User::all() ;
-        return response()->json($users);
+    public function index(Request $request)
+{
+    $query = User::query();
+
+    // Grouped search logic
+    if ($request->has("search") && $request->search !== "") {
+        $query->where(function ($q) use ($request) {
+            $q->where("name", "like", "%{$request->search}%")
+              ->orWhere("email", "like", "%{$request->search}%")
+              ->orWhere("phone", "like", "%{$request->search}%")
+              ->orWhere("city", "like", "%{$request->search}%");
+        });
     }
-    public function show($id){
-        $user = User::find($id) ;
-        $productsCount = Product::where('vendeur_id', $id)->count();
+
+    // Status filter
+    if ($request->has("status") && $request->status !== "all" && $request->status !== "") {
+        $query->where("status", $request->status);
+    }
+
+    // Paginate
+    $users = $query->paginate(10);
+
+    // Add products count
+    $users->getCollection()->transform(function ($user) {
+        $user->productsCount = $user->products()->count();
+        return $user;
+    });
+
+    return response()->json($users);
+}
+
+    public function show($id)
+    {
+        $user = User::find($id);
+        $productsCount = $user->products()->count();
 
 
-        if($user) {
+        if ($user) {
             return response()->json([
-                "status" => true , 
-                "message" => "User found" , 
-                "user" => $user ,
+                "status" => true,
+                "message" => "User found",
+                "user" => $user,
                 "productsCount" => $productsCount
             ]);
         }
         return response()->json([
-            "status" => false , 
+            "status" => false,
             "message" => "User not found"
         ]);
     }
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $credentials = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             "email" => ['required', 'email', 'max:255', 'unique:users'],
-            "password" => ['required', 'string', 'min:8', 'confirmed'] , 
-            "phone" => ['required', 'string', 'max:255'], 
+            "password" => ['required', 'string', 'min:8', 'confirmed'],
+            "phone" => ['required', 'string', 'max:255'],
             "city" => ['required', 'string', 'max:255'],
-        ]) ; 
-        
-        if ($request->hasFile('image')) { 
-            $credentials["image"] = $request->file("image")->store("users",'public') ;
+        ]);
 
+        if ($request->hasFile('image')) {
+            $credentials["image"] = $request->file("image")->store("users", 'public');
         }
         // Role::create([
         //     "name" => "user"
@@ -52,65 +80,67 @@ class UserController extends Controller
         // Role::create([
         //     "name" => "admin"
         // ]);
-     
-        $user = User::create($credentials); 
-        $adminrole = Role::find(2)  ;
-        $user->roles()->attach($adminrole->id) ;
+
+        $user = User::create($credentials);
+        $adminrole = Role::find(2);
+        $user->roles()->attach($adminrole->id);
         return response()->json([
-            "status" => true , 
-            "message" => "User created successfully" 
+            "status" => true,
+            "message" => "User created successfully"
         ]);
     }
-    public function login(Request $request) { 
+    public function login(Request $request)
+    {
         $credentials = $request->validate([
             "email" => ['required', 'email'],
             "password" => ['required']
-        ]) ;
-        $user = User::where("email" , $credentials["email"])->first(); 
-        if($user) {
-            if(password_verify($credentials["password"], $user->password)) {
-                $token = $user->createToken("auth_token")->plainTextToken;  
+        ]);
+        $user = User::where("email", $credentials["email"])->first();
+        if ($user) {
+            if (password_verify($credentials["password"], $user->password)) {
+                $token = $user->createToken("auth_token")->plainTextToken;
                 $user->update([
                     "last_login" => now()
                 ]);
                 return response()->json([
-                    "status" => true , 
-                    "message" => "User logged in successfully" , 
+                    "status" => true,
+                    "message" => "User logged in successfully",
                     "token" => $token
                 ]);
             }
             return response()->json([
-                "status" => false , 
+                "status" => false,
                 "message" => "Password is incorrect"
             ]);
         }
         return response()->json([
-                "status" => false , 
-                "message" => "This credentials does not match our records"   
-            ]) ;
-
-    } 
-    public function getUser(){
+            "status" => false,
+            "message" => "This credentials does not match our records"
+        ]);
+    }
+    public function getUser()
+    {
         $user = auth()->user();
         return response()->json([
-            "status" => true , 
-            "message" => "User logged in successfully" , 
-            "user" => $user , 
-            "Profile_image" => asset("storage/$user->image") 
+            "status" => true,
+            "message" => "User logged in successfully",
+            "user" => $user,
+            "Profile_image" => asset("storage/$user->image")
         ]);
-
-    } 
-    public function logout(){
+    }
+    public function logout()
+    {
         auth()->user()->tokens()->delete();
         return response()->json([
-            "status" => true , 
+            "status" => true,
             "message" => "User logged out successfully"
         ]);
     }
 
-    public function updateUser(Request $request) {
+    public function updateUser(Request $request)
+    {
         $user = auth()->user();
-        
+
         $validated = $request->validate([
             'name' => ['sometimes', 'string', 'max:255'],
             'email' => ['sometimes', 'email', 'max:255', 'unique:users,email,' . $user->id],
@@ -127,9 +157,10 @@ class UserController extends Controller
         ]);
     }
 
-    public function updatePassword(Request $request) {
+    public function updatePassword(Request $request)
+    {
         $user = auth()->user();
-        
+
         $validated = $request->validate([
             'current_password' => ['required', 'string'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
@@ -152,9 +183,10 @@ class UserController extends Controller
         ]);
     }
 
-    public function updateProfileImage(Request $request) {
+    public function updateProfileImage(Request $request)
+    {
         $user = auth()->user();
-        
+
         $request->validate([
             'image' => ['required', 'image', 'max:2048'] // max 2MB
         ]);
@@ -164,7 +196,7 @@ class UserController extends Controller
             if ($user->image) {
                 Storage::disk('public')->delete($user->image);
             }
-            
+
             $path = $request->file('image')->store('users', 'public');
             $user->update(['image' => $path]);
         }
@@ -176,23 +208,42 @@ class UserController extends Controller
         ]);
     }
 
-    public function deleteUser() {
+    public function deleteUser()
+    {
         $user = auth()->user();
-        
+
         // Delete user's image if exists
         if ($user->image) {
             Storage::disk('public')->delete($user->image);
         }
-        
+
         // Delete user's tokens
         $user->tokens()->delete();
-        
+
         // Delete the user
         $user->delete();
 
         return response()->json([
             'status' => true,
             'message' => 'User deleted successfully'
+        ]);
+    }
+
+    public function updateStatus($id, Request $request)
+    {
+        $request->validate([
+            'status' => 'required|in:active,suspended,pending'
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'User status updated successfully',
+            'user' => $user
         ]);
     }
 }

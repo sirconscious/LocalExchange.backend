@@ -6,17 +6,22 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
-{ 
-    use HasFactory ;
+{
+    use HasFactory;
+
     protected $fillable = [
         'nom',
         'description',
         'prix',
-        'localisation',
-        'vendeur_id',
+        'status',
         'categorie_id',
-        'dateDepot', 
-        'etat'  
+        'user_id',
+        'dateDepot',
+        'etat'
+    ];
+
+    protected $casts = [
+        'prix' => 'decimal:2',
     ];
 
     // Relationships
@@ -26,17 +31,18 @@ class Product extends Model
         return $this->belongsTo(User::class, 'vendeur_id');
     }
 
-    public function categorie()
-    {
-        return $this->belongsTo(Category::class, 'categorie_id');
-    }
-
     public function images()
     {
         return $this->hasMany(Image::class, 'produit_id');
-    } 
-    public function caracteristiques()
+    }
+
+    public function user()
     {
-        return $this->hasMany(Caracteristique::class, 'produit_id');
+        return $this->belongsTo(User::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'categorie_id');
     }
 }

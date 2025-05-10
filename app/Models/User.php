@@ -21,6 +21,8 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'status',
+        'last_login',
         'password', 
         "image" , 
         "phone" , 
@@ -61,13 +63,21 @@ public function hasRole($role)
     return $this->roles()->where('name', $role)->exists();
 }
 
+// Define the relationship with products
+public function products()
+{
+    return $this->hasMany(Product::class, 'vendeur_id');
+}
 
-
-// public function produits()
-// {
-//     return $this->hasMany(Product::class, 'vendeur_id');
-// }
-
+// Get products where user is the owner/vendor
+public function ownedProducts()
+{
+    return $this->hasMany(Product::class, 'vendeur_id');
+}
+public function carts()
+{
+    return $this->hasMany(Cart::class);
+}
 // public function transactionsEnTantQuAcheteur()
 // {
 //     return $this->hasMany(Transaction::class, 'acheteur_id');

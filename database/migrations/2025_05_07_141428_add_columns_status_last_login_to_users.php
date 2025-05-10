@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             //
-            $table->enum('status', ['active', 'inactive' ,"suspended"])->default('active')->after('email');
+            $table->enum('status', ['active', 'suspended', 'pending'])->default('active')->after('email');
             $table->timestamp('last_login')->nullable()->after('status');
         });
     }
@@ -24,6 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            //
             $table->dropColumn('status');
             $table->dropColumn('last_login');
         });
