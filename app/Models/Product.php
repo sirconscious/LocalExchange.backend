@@ -16,7 +16,9 @@ class Product extends Model
         'status',
         'categorie_id',
         'user_id',
-        'dateDepot',
+        'dateDepot', 
+        "localisation", 
+        "vendeur_id",
         'etat'
     ];
 

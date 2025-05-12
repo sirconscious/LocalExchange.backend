@@ -61,7 +61,7 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $vendeur_id = auth()->user()->id;
-        
+        // return response()->json($request->all()) ;
         $formFields = $request->validate([
             "nom" => "required",
             "description" => "required",
